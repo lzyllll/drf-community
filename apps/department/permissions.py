@@ -33,9 +33,6 @@ class IsSelfManagerDoDepOrReadOnly(BasePermission):
     凑合用，灵活性过于差，只能用Dep的权限判断
     """
     def has_permission(self, request, view):
-        if isAdmin(request):
-            return True
-
         if request.method in ['POST']:
             return False
         # get等查询，直接就可以
@@ -43,10 +40,6 @@ class IsSelfManagerDoDepOrReadOnly(BasePermission):
             return True
 
     def has_object_permission(self, request, view, obj):
-        #管理员
-        if isAdmin(request):
-            return True
-        # 在这里添加对象级别的权限检查（如是否可以修改或删除该对象）
         if request.method in ['PUT']:
             return isManager(request, view)
 

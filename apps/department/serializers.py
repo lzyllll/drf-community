@@ -1,26 +1,31 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Department, DepartMember, DepartmentRequest
+from django.contrib.auth.models import User
 
-from apps.department.models import Department, DepartMember
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'email']
 
 class DepartmentSerializer(serializers.ModelSerializer):
+    head_user = serializers.StringRelatedField()  # Assuming you want to display the head_user's username
+    members = serializers.StringRelatedField(many=True)  # Displaying member usernames
 
     class Meta:
         model = Department
-        fields = '__all__'
+        fields = ['id', 'name', 'description', 'created', 'head_user', 'members']
 
 
 class DepartMemberSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    class Meta:
-        model = DepartMember
-        exclude = ['department','id']
+    user = serializers.StringRelatedField()
+    department = serializers.StringRelatedField()
 
-class DepartMemberDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = DepartMember
-        fields = '__all__'
+        fields = ['id', 'user', 'department', 'joined']
+
+
+class DepartmentRequestSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    department = serializers.StringRelatedField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = DepartmentRequest
+        fields = ['id', 'user', 'department', 'status', 'status_display', 'created']

@@ -21,7 +21,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from apps.snippets import views
-from apps.department.views import DepartmentViewSet,DepartMemberViewSet,create_dep
+from apps.department.views import DepartmentViewSet,DepartMemberViewSet
 
 #使用viewset,DepartRouter
 DepartRouter = DefaultRouter()
@@ -47,7 +47,6 @@ urlpatterns = [
     #测试缓存
     path('view/', views.my_view, name='view'),
     path('refresh/', views.refresh),
-    path('dep/cre/',create_dep),
 
     #depart的viewset
     path('', include(DepartRouter.urls)),
