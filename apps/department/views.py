@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db import transaction
 from django.shortcuts import render
 from rest_framework import viewsets, permissions, status
 
@@ -56,19 +57,39 @@ class DepartMemberViewSet(viewsets.ModelViewSet):
     serializer_class = DepartMemberSerializer
     permission_classes = []
 
-
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated], url_path='custom-path')
     def custom_list(self, request, **kwargs):
         # Custom list logic here
         return Response({"message": "Custom list action"})
 
 
-
-
 class DepartmentRequestViewSet(viewsets.ModelViewSet):
     queryset = DepartmentRequest.objects.all()
     serializer_class = DepartmentRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    @transaction.atomic()
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def approve(self, request, pk=None):
+        department_request = self.get_object()
+        # 同意请求，保存
+        department_request.status = DepartmentRequest.APPROVED
+        department_request.save()
+        # 添加到成员
+        department = department_request.department
+        user = department_request.user
+        if not DepartMember.objects.filter(user=user, department=department).exists():
+            DepartMember.objects.create(user=user, department=department)
+
+        return Response({'status': 'request approved'}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def reject(self, request, pk=None):
+        department_request = self.get_object()
+        # 拒绝请求，保存
+        department_request.status = DepartmentRequest.REJECTED
+        department_request.save()
+        return Response({'status': 'request rejected'}, status=status.HTTP_200_OK)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
