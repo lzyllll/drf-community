@@ -1,3 +1,10 @@
+# 示例
+virtualenv venv
+source venv/bin/activate
+(venv) $ python -m pip install -U pip setuptools
+(venv) $ pip install -U -r requirements.txt
+(venv) $ python manage.py migrate
+(venv) $ python manage.py runserver
 
 
 # url设计 restful
