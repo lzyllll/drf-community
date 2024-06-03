@@ -21,12 +21,13 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from apps.snippets import views
-from apps.department.views import DepartmentViewSet,DepartMemberViewSet
+from apps.department.views import DepartmentViewSet,DepartMemberViewSet,DepartmentRequestViewSet
 
 #使用viewset,DepartRouter
 DepartRouter = DefaultRouter()
 DepartRouter.register(r'department', DepartmentViewSet, basename='department')
-DepartRouter.register(r'department/(?P<dep_id>\d+)/members',DepartMemberViewSet,basename='member')
+DepartRouter.register(r'department_members',DepartMemberViewSet,basename='members')
+DepartRouter.register(r'department_requests',DepartmentRequestViewSet,basename='requests')
 
 
 urlpatterns = [

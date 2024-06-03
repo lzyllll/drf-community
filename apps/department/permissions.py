@@ -13,14 +13,14 @@ def isManager(request, view) -> bool:
     作为dep_id
     然后根据dep_id 和 request.user 查询是否为管理员
 
-    """
-    try:
-        dep_id = view.kwargs.get('dep_id')
-        if not dep_id:
-            dep_id = view.kwargs.get('pk')
-        Department.objects.get(pk=dep_id, head_user=request.user)
-    except:
-        return False
+    # """
+    # try:
+    #     dep_id = view.kwargs.get('dep_id')
+    #     if not dep_id:
+    #         dep_id = view.kwargs.get('pk')
+    #     Department.objects.get(pk=dep_id, head_user=request.user)
+    # except:
+    #     return False
     return True
 
 
@@ -33,6 +33,8 @@ class IsSelfManagerDoDepOrReadOnly(BasePermission):
     凑合用，灵活性过于差，只能用Dep的权限判断
     """
     def has_permission(self, request, view):
+        if isAdmin(request):
+            return True
         if request.method in ['POST']:
             return False
         # get等查询，直接就可以
@@ -40,6 +42,8 @@ class IsSelfManagerDoDepOrReadOnly(BasePermission):
             return True
 
     def has_object_permission(self, request, view, obj):
+        if isAdmin(request):
+            return True
         if request.method in ['PUT']:
             return isManager(request, view)
 
