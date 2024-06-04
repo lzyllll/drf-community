@@ -47,4 +47,4 @@ class DepartmentRequest(models.Model):
         unique_together = ['user', 'department']  # 确保每个用户对每个社团只有一个请求
 
     def __str__(self):
-        return f"{self.user.username} - {self.department.name} - {self.get_status_display()}"
+        return f"{self.user.username} 申请部门 {self.department.name} 的状态为 {self.status}"

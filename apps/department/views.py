@@ -91,7 +91,7 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
     因为需要在request中增加，members表也要增加，所以需要transaction
     '''
     @transaction.atomic()
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
         department_request = self.get_object()
         # 同意请求，保存
@@ -100,13 +100,18 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
         # 添加到成员
         department = department_request.department
         user = department_request.user
+        # 初始化社团的时候添加成员，没有请求
+        # todo 之后可能添加社团初始化后，同时会添加请求
         if not DepartMember.objects.filter(user=user, department=department).exists():
             DepartMember.objects.create(user=user, department=department)
 
         return Response({'status': 'request approved'}, status=status.HTTP_200_OK)
 
-    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    # 可以单独设置，但我已经直接通过view.action判断了，就不必了
+    # 在action加入选项 permission_classes=[permissions.IsAuthenticated]
+    @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
+
         department_request = self.get_object()
         # 拒绝请求，保存
         department_request.status = DepartmentRequest.REJECTED

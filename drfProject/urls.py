@@ -22,13 +22,14 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 from apps.snippets import views
 from apps.department.views import DepartmentViewSet,DepartMemberViewSet,DepartmentRequestViewSet
-
+from apps.activity.views import ActivityViewSet,ActivityRequestViewSet
 #使用viewset,DepartRouter
 DepartRouter = DefaultRouter()
 DepartRouter.register(r'department', DepartmentViewSet, basename='department')
-DepartRouter.register(r'department_members',DepartMemberViewSet,basename='members')
-DepartRouter.register(r'department_requests',DepartmentRequestViewSet,basename='requests')
-
+DepartRouter.register(r'department_members',DepartMemberViewSet,basename='department_members')
+DepartRouter.register(r'department_requests',DepartmentRequestViewSet,basename='department_requests')
+DepartRouter.register(r'activity',ActivityViewSet,basename='activity')
+DepartRouter.register(r'activity_requests',ActivityRequestViewSet,basename='activity_requests')
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
