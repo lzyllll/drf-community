@@ -3,7 +3,7 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.views import View
 from apps.department.models import Department, DepartmentRequest, DepartMember
-from apps.department.views import DepartmentRequestViewSet
+
 
 '''
 判断社团的管理员，是否管理的是本身的社团
@@ -29,7 +29,7 @@ class DepartmentPermissionControl(BasePermission):
         if request.method in ['DELETE']:
             return isAdmin(request)
         else:
-            return obj.head_user in request.user or isAdmin(request)
+            return obj.head_user == request.user or isAdmin(request)
 
 
 class DepartMemberPermissionControl(BasePermission):
@@ -48,7 +48,7 @@ class DepartMemberPermissionControl(BasePermission):
 
 class DepartRequestPermissionControl(BasePermission):
 
-    def has_object_permission(self, request: Request, view: DepartmentRequestViewSet, obj: DepartmentRequest):
+    def has_object_permission(self, request: Request, view, obj: DepartmentRequest):
         # 社团管理员仅仅有同意请求和拒绝请求的权限
         if view.action in ['approve', 'reject']:
             # 如果目标部门，为当前操作用户所拥有的部门权限
