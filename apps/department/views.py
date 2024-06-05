@@ -46,6 +46,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
 
 
 
+
 class DepartMemberViewSet(viewsets.ModelViewSet):
     """
     @URL：  dep_members
@@ -86,7 +87,10 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [DepartRequestPermissionControl]
     filterset_fields = ['department_id']
 
-
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        response['X-dep-Choices'] = 'you have no choice haha'
+        return response
     '''
     因为需要在request中增加，members表也要增加，所以需要transaction
     '''

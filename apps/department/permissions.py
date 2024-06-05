@@ -33,7 +33,10 @@ class DepartmentPermissionControl(BasePermission):
 
 
 class DepartMemberPermissionControl(BasePermission):
-
+    def has_permission(self, request: Request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        return isAdmin(request)
 
     def has_object_permission(self, request, view, obj:DepartMember):
 

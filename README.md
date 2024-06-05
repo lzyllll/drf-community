@@ -1,10 +1,20 @@
 # 示例
+
+数据库在setting中自己配置或者直接创建名为django_community的数据库即
+```
+
+create database django_community;
+```
+
+
 ``` cmd
 virtualenv venv
 source venv/bin/activate
 (venv) $ python -m pip install -U pip setuptools
 (venv) $ pip install -U -r requirements.txt
+(venv) $ python manage.py makemigrations
 (venv) $ python manage.py migrate
+(venv) $ python manage.py createsuperuser
 (venv) $ python manage.py runserver
 ```
 

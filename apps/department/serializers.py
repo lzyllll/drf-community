@@ -6,6 +6,14 @@ from django.contrib.auth.models import User
 class DepartmentSerializer(serializers.ModelSerializer):
     head_user = serializers.StringRelatedField(read_only=True)
     head_user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='head_user', write_only=True)
+    # 方法1 设置slug，因为auth.user.username不允许重复，但是通过username来添加的而不是id
+    # members = serializers.SlugRelatedField(
+    #     many=True,
+    #     slug_field='username',
+    #     queryset=User.objects.all()
+    # )
+
+    # 方法2，设置一个可读string,再设置一个可写id
     members = serializers.StringRelatedField(many=True, read_only=True)
     member_ids = serializers.PrimaryKeyRelatedField(many=True, queryset=User.objects.all(), source='members',
                                                     write_only=True)
