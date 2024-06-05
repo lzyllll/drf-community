@@ -13,6 +13,8 @@ class CampusActivity(models.Model):
     sponsors = models.ManyToManyField(User, related_name='sponsor_activity')
     participants = models.ManyToManyField(User, related_name='joined_activity')
 
+    planning_document = models.FileField(upload_to='docs/planning_documents/', null=True, blank=True)
+
     class Meta:
         ordering = ['begin_date']
 
