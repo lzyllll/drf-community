@@ -10,12 +10,15 @@ from django.contrib.auth.models import User, Permission
 from django.http import JsonResponse, FileResponse
 from django.shortcuts import get_object_or_404
 
-from rest_framework import generics, permissions, mixins
-from rest_framework.decorators import api_view, parser_classes
+from rest_framework import generics, permissions, mixins, viewsets, renderers
+from rest_framework.decorators import api_view, parser_classes, action
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.department.models import DepartmentRequest, Department
+from apps.department.permissions import DepartRequestPermissionControl, DepartmentPermissionControl
+from apps.department.serializers import DepartmentRequestSerializer, DepartmentSerializer
 from apps.snippets.models import Snippet
 from apps.snippets.permissions import IsOwnerOrReadOnly
 from apps.snippets.serializers import UserSerializer, SnippetSerializer
@@ -40,52 +43,27 @@ class UserDetail(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 
-class SnippetDetail(mixins.RetrieveModelMixin,
-                    mixins.UpdateModelMixin,
-                    mixins.DestroyModelMixin,
-                    generics.GenericAPIView):
+class SnippetViewSet(viewsets.ModelViewSet):
+    """
+    This ViewSet automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
     queryset = Snippet.objects.all()
     serializer_class = SnippetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly]
+    # queryset = Department.objects.all()
+    # serializer_class = DepartmentSerializer
+    # permission_classes = [DepartmentPermissionControl]
 
+    # @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    # def highlight(self, request, *args, **kwargs):
+    #     snippet = self.get_object()
+    #     return Response(snippet.highlighted)
 
-    def get(self, request, *args, **kwargs):
-
-        return self.retrieve(request, *args, **kwargs)
-
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
-
-    def post(self,request):
-        return JsonResponse('a')
-
-
-class SnippetList(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  generics.GenericAPIView):
-    # 相当于是配置，不要动,名称也是固定的
-    queryset = Snippet.objects.all()
-    serializer_class = SnippetSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    # @method_decorator(cache_page(60 * 15))
-    def get(self, request, *args, **kwargs):
-
-        return self.list(request, *args, **kwargs)
-
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
-
-    #混合类的方法会调用
-    #保存snippet时，设置owner属性
-    def perform_create(self, serializer):
-        print("当前用户是：", self.request.user)
-        serializer.save(owner=self.request.user)
-
+    # def perform_create(self, serializer):
+    #     serializer.save(owner=self.request.user)
 
 def add_permissons(request):
     user = get_object_or_404(User, pk=2)

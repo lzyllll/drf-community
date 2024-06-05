@@ -30,6 +30,7 @@ DepartRouter.register(r'department_members',DepartMemberViewSet,basename='depart
 DepartRouter.register(r'department_requests',DepartmentRequestViewSet,basename='department_requests')
 DepartRouter.register(r'activity',ActivityViewSet,basename='activity')
 DepartRouter.register(r'activity_requests',ActivityRequestViewSet,basename='activity_requests')
+DepartRouter.register(r'snippets', views.SnippetViewSet, basename='snippet')
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
@@ -38,9 +39,7 @@ urlpatterns = [
     #查询用户
     path('users/<int:pk>/', views.UserDetail.as_view()),
     path('users/', views.UserList.as_view()),
-    #查询代码片段
-    path('snippets/', views.SnippetList.as_view()),
-    path('snippets/<int:pk>/', views.SnippetDetail.as_view()),
+
     #下载文件
     path('file/<int:pk>/', views.download_file),
     path('file/', views.show_files),
