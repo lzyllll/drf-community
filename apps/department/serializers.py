@@ -35,6 +35,16 @@ class DepartMemberSerializer(serializers.ModelSerializer):
         model = DepartMember
         fields = ['id', 'user', 'user_id', 'department', 'department_id', 'joined']
 
+    def validate(self, data):
+        user = data.get('user')
+        department = data.get('department')
+
+        # 减少代码量，未简化的如下
+        if DepartMember.objects.filter(user=user, department=department).exclude(
+                id=self.instance.id if self.instance else None).exists():
+            raise serializers.ValidationError("一个人不可能同时加入社团两次.")
+
+        return data
 
 class DepartmentRequestSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
