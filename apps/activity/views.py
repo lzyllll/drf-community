@@ -1,5 +1,6 @@
 from django.db import transaction
 from django.shortcuts import render
+from django.utils import timezone
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
@@ -15,6 +16,16 @@ class ActivityViewSet(viewsets.ModelViewSet):
     queryset = CampusActivity.objects.all()
     serializer_class = CampusActivitySerializer
     permission_classes = []
+
+    @action(detail=True, methods=['post'])
+    def end_activity(self,request,pk=None):
+        partial = True
+        instance = self.get_object()
+
+        serializer = self.get_serializer(instance, data={'end_date': timezone.now()}, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
 
 class ActivityRequestViewSet(viewsets.ModelViewSet):

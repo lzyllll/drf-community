@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 
 # Create your models here.
@@ -20,6 +21,11 @@ class CampusActivity(models.Model):
 
     def __str__(self):
         return self.name
+
+    def end_activity(self,end_date=timezone.now()):
+        self.end_date = end_date
+        self.save()
+
 
 
 class CampusActivityRequest(models.Model):

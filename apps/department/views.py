@@ -43,7 +43,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [DepartmentPermissionControl]
-    filterset_fields = ['name','head_user_id']
+    filterset_fields = ['name', 'head_user_id']
 
     def get_serializer_class(self):
         # 这个序列器，为专为管理员提供，让他只能修改des和name 继承自dep
@@ -51,8 +51,6 @@ class DepartmentViewSet(viewsets.ModelViewSet):
         if self.action in ['update', 'partial_update']:
             return ManagerDepartmentSerializer
         return super().get_serializer_class()
-
-
 
 
 class DepartMemberViewSet(viewsets.ModelViewSet):
@@ -72,8 +70,6 @@ class DepartMemberViewSet(viewsets.ModelViewSet):
     serializer_class = DepartMemberSerializer
     permission_classes = [DepartMemberPermissionControl]
     filterset_fields = ['department_id']
-
-
 
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated], url_path='custom-path')
     def custom_list(self, request, **kwargs):
@@ -101,9 +97,11 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
         response = super().list(request, *args, **kwargs)
         response['X-dep-Choices'] = 'you have no choice haha'
         return response
+
     '''
     因为需要在request中增加，members表也要增加，所以需要transaction
     '''
+
     @transaction.atomic()
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
@@ -125,7 +123,6 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
     # 在action加入选项 permission_classes=[permissions.IsAuthenticated]
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
-
         department_request = self.get_object()
         # 拒绝请求，保存
         department_request.status = DepartmentRequest.REJECTED
@@ -135,5 +132,6 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
     '''
     发送请求，默认为自身auth的user发送
     '''
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
