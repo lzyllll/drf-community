@@ -13,7 +13,8 @@ from rest_framework.response import Response
 # model
 from apps.department.models import Department, DepartMember, DepartmentRequest
 # serialier
-from apps.department.serializers import DepartmentSerializer, DepartmentRequestSerializer, DepartMemberSerializer
+from apps.department.serializers import DepartmentSerializer, DepartmentRequestSerializer, DepartMemberSerializer, \
+    ManagerDepartmentSerializer
 # permission
 from apps.department.permissions import DepartmentPermissionControl, DepartRequestPermissionControl, \
     DepartMemberPermissionControl
@@ -44,6 +45,13 @@ class DepartmentViewSet(viewsets.ModelViewSet):
     permission_classes = [DepartmentPermissionControl]
     filterset_fields = ['name','head_user_id']
 
+    def get_serializer_class(self):
+        # 这个序列器，为专为管理员提供，让他只能修改des和name 继承自dep
+        # 也可以使用action装饰器
+        if self.action in ['update', 'partial_update']:
+            return ManagerDepartmentSerializer
+        return super().get_serializer_class()
+
 
 
 
@@ -64,6 +72,8 @@ class DepartMemberViewSet(viewsets.ModelViewSet):
     serializer_class = DepartMemberSerializer
     permission_classes = [DepartMemberPermissionControl]
     filterset_fields = ['department_id']
+
+
 
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated], url_path='custom-path')
     def custom_list(self, request, **kwargs):

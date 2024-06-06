@@ -184,6 +184,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    # 指定默认的渲染器  其实默认就已经配好了，不用写。。。
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #         'rest_framework.renderers.BrowsableAPIRenderer',
+    #         'rest_framework.renderers.JSONRenderer',
+    # ],
 }
 
 
@@ -193,7 +198,7 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {
         "file": {
-            "level": "DEBUG",
+            "level": "INFO",
             "class": "logging.FileHandler",
             "filename": BASE_DIR / 'debug.log',
         },
@@ -201,7 +206,7 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["file"],
-            "level": "DEBUG",
+            "level": "INFO",
             "propagate": True,
         },
     },

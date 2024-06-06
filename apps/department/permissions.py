@@ -12,8 +12,14 @@ from apps.department.models import Department, DepartmentRequest, DepartMember
 
 
 class DepartmentPermissionControl(BasePermission):
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+            # 如果是对像级的处理，交给下obj——perm处理
+        if view.kwargs.get('pk'):
+            return True
 
-
+        return bool(request.user and request.user.is_staff)
 
     def has_object_permission(self, request, view, obj):
 
@@ -23,18 +29,22 @@ class DepartmentPermissionControl(BasePermission):
 
         if request.method in SAFE_METHODS:
             return True
-        if request.method in ['DELETE']:
-            return bool(request.user and request.user.is_staff)
-        else:
+        if request.method in ['PUT','PATCH']:
             return obj.head_user == request.user
+        else:
+            return bool(request.user and request.user.is_staff)
 
 
 class DepartMemberPermissionControl(BasePermission):
     def has_permission(self, request: Request, view):
 
+
         if request.method in SAFE_METHODS:
             return True
-        return True
+        # 如果是对像级的处理，交给下obj——perm处理
+        if view.kwargs.get('pk'):
+            return True
+        return bool(request.user and request.user.is_staff)
 
     def has_object_permission(self, request, view, obj: DepartMember):
 

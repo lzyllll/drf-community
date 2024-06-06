@@ -23,8 +23,12 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'created', 'head_user', 'head_user_id', 'members', 'member_ids']
 
 
-class DepartMemberSerializer(serializers.ModelSerializer):
+class ManagerDepartmentSerializer(DepartmentSerializer):
+    class Meta(DepartmentSerializer.Meta):
+        fields = ['id', 'name', 'description', 'created', 'head_user', 'members']
 
+
+class DepartMemberSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     user_id = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), source='user', write_only=True)
     department = serializers.StringRelatedField(read_only=True)
@@ -46,13 +50,14 @@ class DepartMemberSerializer(serializers.ModelSerializer):
 
         return data
 
+
 class DepartmentRequestSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()
 
     class Meta:
         model = DepartmentRequest
-        fields = ['id', 'user', 'department', 'status','created']
-        read_only_fields = ['user','status']
+        fields = ['id', 'user', 'department', 'status', 'created']
+        read_only_fields = ['user', 'status']
 
     def validate(self, data):
         user = self.context['request'].user
