@@ -3,6 +3,7 @@ import os
 
 import matplotlib
 from django.core.cache import cache
+from django.views.decorators.cache import cache_page
 from matplotlib import pyplot as plt
 
 from django.contrib.contenttypes.models import ContentType
@@ -100,13 +101,13 @@ def show_image(request,title):
     plt.ylabel('y')
     plt.title(title)
 
-    # 将图表临时保存到内存
+
     buffer = io.BytesIO()
     plt.savefig(buffer, format='png')
     buffer.seek(0)
     plt.close()
 
-    # 构建响应
+
     return FileResponse(buffer, content_type='image/png')
 
 
@@ -139,19 +140,19 @@ def show_files(request):
 
 
 @api_view(['GET'])
-# @cache_page(60 * 15)
+@cache_page(60 * 15)
 def my_view(request):
     '''
     展现所有的代码片段
     '''
-    temp = cache.get('a')
-    if temp:
-        return Response(temp)
-    else:
-        snippets = Snippet.objects.all()
-        ser = SnippetSerializer(snippets,many=True)
-        cache.set('a',ser.data)
-        return Response(ser.data)
+    # if not cache.get('a'):
+    #     cache.set('a',ser.data)
+    # else :
+    #     return cache.get('a')
+
+    snippets = Snippet.objects.all()
+    ser = SnippetSerializer(snippets,many=True)
+    return Response(ser.data)
 
 
 def refresh(request):

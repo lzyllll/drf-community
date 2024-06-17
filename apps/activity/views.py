@@ -37,7 +37,7 @@ class ActivityRequestViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
         activity_request:CampusActivityRequest = self.get_object()
-        # 同意请求，保存
+        # 同意请求
         activity_request.status = CampusActivityRequest.APPROVED
         activity_request.save()
         # 添加到成员

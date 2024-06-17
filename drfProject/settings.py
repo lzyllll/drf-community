@@ -27,7 +27,10 @@ SECRET_KEY = "django-insecure-hil_k)bjx+5wi82s1h$9*8h6n)&(!@r$z#6)mnv-7xfjh^%e%f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '10.100.14.97',
+]
 
 
 # Application definition
@@ -45,7 +48,8 @@ INSTALLED_APPS = [
     'django_filters',
     "apps.snippets",
     "apps.activity",
-    "apps.department"
+    "apps.department",
+    'drf_yasg',
 
 ]
 
@@ -155,6 +159,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 #跨源配置
+# CORS_ALLOW_CREDENTIALS = True
+#
+# CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     # 添加其他允许的来源，如果有的话
@@ -178,7 +185,7 @@ SESSION_CACHE_ALIAS = "default"
 # auth
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 12,
+    'PAGE_SIZE': 2,
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',

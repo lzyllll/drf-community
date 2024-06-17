@@ -48,3 +48,5 @@ class DepartmentRequest(models.Model):
 
     def __str__(self):
         return f"{self.user.username} 申请部门 {self.department.name} 的状态为 {self.status}"
+
+    

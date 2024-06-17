@@ -22,7 +22,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         model = Department
         fields = ['id', 'name', 'description', 'created', 'head_user', 'head_user_id', 'members', 'member_ids']
 
-
+# 专用于manager的序列器，继承就行了，只是某些字段不能dpe_manager改
 class ManagerDepartmentSerializer(DepartmentSerializer):
     class Meta(DepartmentSerializer.Meta):
         fields = ['id', 'name', 'description', 'created', 'head_user', 'members']

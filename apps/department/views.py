@@ -1,6 +1,12 @@
+import asyncio
+import time
+
+from asgiref.sync import async_to_sync, sync_to_async
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.views import View
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, permissions, status
 
@@ -19,6 +25,7 @@ from apps.department.serializers import DepartmentSerializer, DepartmentRequestS
 from apps.department.permissions import DepartmentPermissionControl, DepartRequestPermissionControl, \
     DepartMemberPermissionControl
 
+
 from apps.snippets.serializers import UserSerializer
 # request typing
 from rest_framework.request import Request
@@ -26,16 +33,28 @@ from rest_framework.request import Request
 
 # Create your views here.
 
+class AsyncView(View):
+
+    async def get(self, request, *args, **kwargs):
+        # Perform io-blocking view logic using await, sleep for example.
+        begin = time.time()
+        async for dep in Department.objects.all():
+            member = await dep.members.afirst()
+        return HttpResponse('a')
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     """
     @URL: dep
+
     @URL_obj: dep/<int:pk>
+
     @权限：
         admin：增加，删除，修改社团
         自身社团的管理员：修改社团
         普通用户：可读权限
+
     @filter name,head_user_id
+
     @description:
         This ViewSet automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
@@ -56,12 +75,16 @@ class DepartmentViewSet(viewsets.ModelViewSet):
 class DepartMemberViewSet(viewsets.ModelViewSet):
     """
     @URL：  dep_members
+
     @URL_obj: dep_members/<int:pk>
+
     @filter : dep_id 查看指定部门的成员
+
     @权限：
             admin：修改成员,增加成员（所有权限）  （比如哪个成员加入哪个社团）
             社团管理员：删除自身社团成员
             普通用户：可读权限
+
     @description:
         This ViewSet automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
@@ -74,14 +97,17 @@ class DepartMemberViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated], url_path='custom-path')
     def custom_list(self, request, **kwargs):
         # Custom list logic here
-        return Response({"message": "Custom list action"})
+        return Response({"message": "Custom list acticon"})
 
 
 class DepartmentRequestViewSet(viewsets.ModelViewSet):
     """
     @URL dep_requests
+
     @URL_obj dep_requests/<int:pk>
+
     @filter dep_id 查看指定的部门的请求
+
     @permission:
         admin：任意请求
         自身社团管理员：approve，reject自身社团请求相关
