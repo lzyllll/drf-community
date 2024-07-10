@@ -1,9 +1,12 @@
+from django.contrib.auth.models import User
 from django.db import transaction
+from django.db.models import Sum
 from django.shortcuts import render
 from django.utils import timezone
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
+from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.activity.models import CampusActivity, CampusActivityRequest
@@ -20,12 +23,19 @@ class ActivityViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def end_activity(self,request,pk=None):
         partial = True
-        instance = self.get_object()
-
-        serializer = self.get_serializer(instance, data={'end_date': timezone.now()}, partial=partial)
+        instance:CampusActivity = self.get_object()
+        serializer:CampusActivitySerializer = self.get_serializer(instance, data={'end_date': timezone.now()}, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+
         return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'])
+    def detail_list(self, request:Request, pk=None):
+        user:User = request.user
+        total = user.joined_activity.aggregate(total_score=Sum('score'))
+        total['user_id'] = user.id
+        return Response(total, status=status.HTTP_200_OK)
 
 
 class ActivityRequestViewSet(viewsets.ModelViewSet):
@@ -60,3 +70,4 @@ class ActivityRequestViewSet(viewsets.ModelViewSet):
         activity_request.status = CampusActivityRequest.REJECTED
         activity_request.save()
         return Response({'status': 'request rejected'}, status=status.HTTP_200_OK)
+

@@ -36,11 +36,14 @@ from rest_framework.request import Request
 class AsyncView(View):
 
     async def get(self, request, *args, **kwargs):
-        # Perform io-blocking view logic using await, sleep for example.
-        begin = time.time()
+        result = []
         async for dep in Department.objects.all():
             member = await dep.members.afirst()
-        return HttpResponse('a')
+            if member:
+                # 使用 sync_to_async 将（第三方同步代码）[序列化器的 data 属性]转换为异步操作
+                data = await sync_to_async(lambda: UserSerializer(member).data)()
+                result.append(data)
+        return JsonResponse({'result': result})
 
 class DepartmentViewSet(viewsets.ModelViewSet):
     """
@@ -74,7 +77,7 @@ class DepartmentViewSet(viewsets.ModelViewSet):
 
 class DepartMemberViewSet(viewsets.ModelViewSet):
     """
-    @URL：  dep_members
+    :URL：  dep_members
 
     @URL_obj: dep_members/<int:pk>
 
@@ -118,7 +121,6 @@ class DepartmentRequestViewSet(viewsets.ModelViewSet):
     serializer_class = DepartmentRequestSerializer
     permission_classes = [DepartRequestPermissionControl]
     filterset_fields = ['department_id']
-
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         response['X-dep-Choices'] = 'you have no choice haha'

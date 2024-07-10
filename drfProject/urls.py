@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter,SimpleRouter
 from rest_framework.urlpatterns import format_suffix_patterns
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -26,13 +26,8 @@ from apps.snippets import views
 from apps.department.views import DepartmentViewSet,DepartMemberViewSet,DepartmentRequestViewSet,AsyncView
 from apps.activity.views import ActivityViewSet,ActivityRequestViewSet
 #使用viewset,DepartRouter
-DepartRouter = DefaultRouter()
-DepartRouter.register(r'department', DepartmentViewSet, basename='department')
-DepartRouter.register(r'department_members',DepartMemberViewSet,basename='department_members')
-DepartRouter.register(r'department_requests',DepartmentRequestViewSet,basename='department_requests')
-DepartRouter.register(r'activity',ActivityViewSet,basename='activity')
-DepartRouter.register(r'activity_requests',ActivityRequestViewSet,basename='activity_requests')
-DepartRouter.register(r'snippets', views.SnippetViewSet, basename='snippet')
+
+
 
 
 schema_view = get_schema_view(
@@ -49,7 +44,13 @@ schema_view = get_schema_view(
 )
 
 
+
 urlpatterns = [
+    # viewset
+    path('',include('apps.snippets.urls')),
+    path('',include('apps.department.urls')),
+    path('', include('apps.activity.urls')),
+    # async
     path('async/',AsyncView.as_view()),
     #其他
     path('api-auth/', include('rest_framework.urls')),
@@ -70,12 +71,14 @@ urlpatterns = [
     path('file/', views.show_files),
     path('file/upload/', views.ExampleView.as_view()),
     path('image/<str:title>', views.show_image),
+    #文件、通过表格上传
+    path('load/user',views.load_user_by_xlsx),
     #测试缓存
     path('view/', views.my_view, name='view'),
     path('refresh/', views.refresh),
 
-    #depart的viewset
-    path('', include(DepartRouter.urls)),
+
+
 
 ]
 

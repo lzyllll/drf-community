@@ -37,7 +37,7 @@ class myTest(TestCase):
         print(token)
 
         # 将 token 添加到授权头中发送请求
-        # todo
+
 
 
     def test_query_user(self):

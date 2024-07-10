@@ -15,6 +15,7 @@ class CampusActivity(models.Model):
     participants = models.ManyToManyField(User, related_name='joined_activity')
 
     planning_document = models.FileField(upload_to='docs/planning_documents/', null=True, blank=True)
+    score = models.IntegerField()
 
     class Meta:
         ordering = ['begin_date']

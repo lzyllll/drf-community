@@ -28,6 +28,7 @@ SECRET_KEY = "django-insecure-hil_k)bjx+5wi82s1h$9*8h6n)&(!@r$z#6)mnv-7xfjh^%e%f
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
     '127.0.0.1',
     '10.100.14.97',
 ]
@@ -158,7 +159,7 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-#跨源配置
+#cors
 # CORS_ALLOW_CREDENTIALS = True
 #
 # CORS_ORIGIN_ALLOW_ALL = True
@@ -168,7 +169,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
-#redis缓存设置
+#redis cache
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -200,22 +201,22 @@ REST_FRAMEWORK = {
 }
 
 
-#logger
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / 'debug.log',
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file"],
-            "level": "INFO",
-            "propagate": True,
-        },
-    },
-}
+#logger log写在这个文件中。取消了
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "handlers": {
+#         "file": {
+#             "level": "INFO",
+#             "class": "logging.FileHandler",
+#             "filename": BASE_DIR / 'debug.log',
+#         },
+#     },
+#     "loggers": {
+#         "django": {
+#             "handlers": ["file"],
+#             "level": "INFO",
+#             "propagate": True,
+#         },
+#     },
+# }
